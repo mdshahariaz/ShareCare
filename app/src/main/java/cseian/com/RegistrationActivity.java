@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -133,9 +134,23 @@ public class RegistrationActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task task) {
                                         if (task.isSuccessful()){
-                                            Toast.makeText(RegistrationActivity.this, "Details set Successfully", Toast.LENGTH_SHORT).show();
+                                            Objects.requireNonNull( mAuth.getCurrentUser()).sendEmailVerification()
+                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if (task.isSuccessful()){
+                                                                Toast.makeText(RegistrationActivity.this, "Registered successfully. Please check your email for verification",
+                                                                        Toast.LENGTH_LONG).show();
+                                                                email.setText("");
+                                                                password.setText("");
+                                                            }else {
+                                                                Toast.makeText(RegistrationActivity.this, Objects.requireNonNull(task.getException()).getMessage(),
+                                                                        Toast.LENGTH_LONG).show();
+                                                            }
+                                                        }
+                                                    });
                                         }else {
-                                            Toast.makeText(RegistrationActivity.this, "Failed to upload data " + task.getException().toString(), Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(RegistrationActivity.this, "Failed to upload data " + Objects.requireNonNull(task.getException()).toString(), Toast.LENGTH_SHORT).show();
                                         }
 
                                         finish();

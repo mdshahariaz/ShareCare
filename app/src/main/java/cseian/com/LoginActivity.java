@@ -19,6 +19,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Objects;
+
 public class LoginActivity extends AppCompatActivity {
 
     private TextView question;
@@ -78,10 +80,15 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()){
-                                Toast.makeText(LoginActivity.this, "Login is successful. loged in as: " +mAuth.getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                startActivity(intent);
-                                finish();
+                                if (Objects.requireNonNull(mAuth.getCurrentUser()).isEmailVerified()){
+                                    Toast.makeText(LoginActivity.this, "Login is successful. loged in as: " +mAuth.getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }else {
+                                    Toast.makeText(LoginActivity.this, "Please verify your email address",
+                                            Toast.LENGTH_LONG).show();
+                                }
                             }else {
                                 Toast.makeText(LoginActivity.this, "Login failed "+ task.getException().toString(), Toast.LENGTH_SHORT).show();
                             }
